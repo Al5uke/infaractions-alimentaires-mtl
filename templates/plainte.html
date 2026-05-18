@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block titre %}Faire une plainte — Contraventions{% endblock %}
+
+{% block contenu %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <h1>Faire une demande d'inspection</h1>
+    <p class="text-muted">
+      Signalez un problème observé dans un établissement alimentaire.
+    </p>
+
+    <div id="message-succes" class="alert alert-success d-none" role="alert"></div>
+    <div id="message-erreur" class="alert alert-danger d-none" role="alert"></div>
+
+    <form id="form-plainte" novalidate>
+      <div class="mb-3">
+        <label for="plainte-etablissement" class="form-label">
+          Nom de l'établissement <span class="text-danger">*</span>
+        </label>
+        <input type="text" class="form-control" id="plainte-etablissement"
+               name="etablissement" required maxlength="200">
+        <div class="invalid-feedback">Ce champ est obligatoire.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="plainte-adresse" class="form-label">
+          Adresse <span class="text-danger">*</span>
+        </label>
+        <input type="text" class="form-control" id="plainte-adresse"
+               name="adresse" required maxlength="300">
+        <div class="invalid-feedback">Ce champ est obligatoire.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="plainte-ville" class="form-label">
+          Ville <span class="text-danger">*</span>
+        </label>
+        <input type="text" class="form-control" id="plainte-ville"
+               name="ville" required maxlength="100">
+        <div class="invalid-feedback">Ce champ est obligatoire.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="plainte-date-visite" class="form-label">
+          Date de votre visite <span class="text-danger">*</span>
+        </label>
+        <input type="date" class="form-control" id="plainte-date-visite"
+               name="date_visite" required>
+        <div class="invalid-feedback">Ce champ est obligatoire.</div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="plainte-prenom" class="form-label">
+            Prénom <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="plainte-prenom"
+                 name="prenom_client" required maxlength="100">
+          <div class="invalid-feedback">Ce champ est obligatoire.</div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="plainte-nom" class="form-label">
+            Nom <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" id="plainte-nom"
+                 name="nom_client" required maxlength="100">
+          <div class="invalid-feedback">Ce champ est obligatoire.</div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="plainte-description" class="form-label">
+          Description du problème <span class="text-danger">*</span>
+        </label>
+        <textarea class="form-control" id="plainte-description"
+                  name="description" rows="4" required maxlength="2000"></textarea>
+        <div class="invalid-feedback">Ce champ est obligatoire.</div>
+      </div>
+
+      <button type="submit" class="btn btn-danger">
+        Soumettre la plainte
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/plainte.js') }}"></script>
+{% endblock %}

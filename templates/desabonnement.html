@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block titre %}Désabonnement — Contraventions{% endblock %}
+
+{% block contenu %}
+<div class="row justify-content-center">
+  <div class="col-md-6 text-center">
+
+    <div id="vue-confirmation">
+      <h1 class="mb-3">Confirmer le désabonnement</h1>
+      <p class="lead mb-1">
+        Vous êtes sur le point de vous désabonner des alertes pour :
+      </p>
+      <p class="fw-bold fs-5 text-danger mb-4">« {{ etablissement }} »</p>
+      <p class="text-muted mb-4">
+        Vous ne recevrez plus de courriel lorsque cet établissement reçoit
+        une nouvelle contravention.
+      </p>
+
+      <div id="msg-erreur" class="alert alert-danger d-none mb-3" role="alert"></div>
+
+      <button id="btn-confirmer" class="btn btn-danger me-2">
+        Confirmer le désabonnement
+      </button>
+      <a href="{{ url_for('afficher_accueil') }}" class="btn btn-outline-secondary">
+        Annuler
+      </a>
+    </div>
+
+    <div id="vue-succes" class="d-none">
+      <div class="text-success mb-3" style="font-size: 4rem;">&#10003;</div>
+      <h2>Désabonnement confirmé</h2>
+      <p class="text-muted">
+        Vous ne recevrez plus d'alertes pour « {{ etablissement }} ».
+      </p>
+      <a href="{{ url_for('afficher_accueil') }}" class="btn btn-outline-secondary mt-2">
+        Retour à l'accueil
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const TOKEN_DESABONNEMENT = "{{ token }}";
+</script>
+<script src="{{ url_for('static', filename='js/desabonnement.js') }}"></script>
+{% endblock %}

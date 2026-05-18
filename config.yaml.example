@@ -1,0 +1,12 @@
+# Configuration de l'application Contraventions alimentaires
+# Copier ce fichier en config.yaml et remplir les valeurs.
+
+courriel:
+  expediteur: votre-adresse@gmail.com
+  destinataire: destinataire@exemple.com
+  serveur_smtp: smtp.gmail.com
+  port_smtp: 587
+  mot_de_passe: votre-mot-de-passe-application
+
+# Clé secrète pour les sessions Flask et les tokens de désabonnement
+secret_key: remplacer-par-une-chaine-aleatoire-longue

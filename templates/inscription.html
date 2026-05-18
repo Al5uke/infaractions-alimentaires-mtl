@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block titre %}Inscription — Contraventions{% endblock %}
+
+{% block contenu %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <h1 class="mb-1">Créer un profil</h1>
+    <p class="text-muted mb-4">
+      Inscrivez-vous pour recevoir des alertes par courriel lorsqu'un
+      établissement que vous surveillez reçoit une nouvelle contravention.
+    </p>
+
+    <div id="msg-succes" class="alert alert-success d-none" role="alert"></div>
+    <div id="msg-erreur" class="alert alert-danger d-none" role="alert"></div>
+
+    <form id="form-inscription" novalidate>
+
+      <div class="mb-3">
+        <label for="ins-nom" class="form-label">
+          Nom complet <span class="text-danger">*</span>
+        </label>
+        <input type="text" class="form-control" id="ins-nom"
+               name="nom_complet" required maxlength="200">
+        <div class="invalid-feedback">Ce champ est obligatoire.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="ins-courriel" class="form-label">
+          Adresse courriel <span class="text-danger">*</span>
+        </label>
+        <input type="email" class="form-control" id="ins-courriel"
+               name="courriel" required maxlength="200">
+        <div class="invalid-feedback">Adresse courriel invalide.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="ins-mdp" class="form-label">
+          Mot de passe <span class="text-danger">*</span>
+          <small class="text-muted">(6 caractères minimum)</small>
+        </label>
+        <input type="password" class="form-control" id="ins-mdp"
+               name="mot_de_passe" required minlength="6">
+        <div class="invalid-feedback">6 caractères minimum.</div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">
+          Établissements à surveiller
+          <small class="text-muted">(optionnel — modifiable après inscription)</small>
+        </label>
+        <div class="input-group mb-2">
+          <input type="text" class="form-control" id="ins-etab-saisie"
+                 placeholder="Nom de l'établissement" maxlength="200">
+          <button type="button" class="btn btn-outline-secondary"
+                  id="btn-ajouter-etab">Ajouter</button>
+        </div>
+        <ul id="liste-etab" class="list-group"></ul>
+      </div>
+
+      <button type="submit" class="btn btn-danger">
+        Créer mon profil
+      </button>
+      <a href="{{ url_for('afficher_connexion') }}" class="btn btn-link">
+        Déjà inscrit ? Se connecter
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/inscription.js') }}"></script>
+{% endblock %}

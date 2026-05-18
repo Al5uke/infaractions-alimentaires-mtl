@@ -1,0 +1,25 @@
+# Environnement virtuel
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Base de données (contient des données — recréer avec get_data.py)
+db/db.sqlite
+
+# Configuration sensible (contient le mot de passe SMTP)
+config.yaml
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/

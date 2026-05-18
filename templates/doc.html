@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block titre %}Documentation API — Contraventions{% endblock %}
+
+{% block contenu %}
+<h1>Documentation de l'API REST</h1>
+<p class="text-muted">Version 1 — Contraventions alimentaires Montréal</p>
+
+<!-- GET /contrevenants -->
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center gap-2">
+    <span class="badge bg-success">GET</span>
+    <h2 class="h6 mb-0"><code>/contrevenants</code></h2>
+  </div>
+  <div class="card-body">
+    <p>Retourne les établissements contrevenants entre deux dates.</p>
+    <h3 class="h6">Paramètres</h3>
+    <table class="table table-sm table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Paramètre</th>
+          <th scope="col">Type</th>
+          <th scope="col">Requis</th>
+          <th scope="col">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>du</code></td>
+          <td>string</td>
+          <td>Oui</td>
+          <td>Date de début (YYYY-MM-DD)</td>
+        </tr>
+        <tr>
+          <td><code>au</code></td>
+          <td>string</td>
+          <td>Oui</td>
+          <td>Date de fin (YYYY-MM-DD)</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 class="h6">Exemple</h3>
+    <pre class="bg-light p-2 rounded"><code>GET /contrevenants?du=2022-05-08&amp;au=2024-05-15</code></pre>
+    <h3 class="h6">Réponse 200</h3>
+    <pre class="bg-light p-2 rounded"><code>[
+  {"etablissement": "RESTAURANT ABC", "nb_contraventions": 3}
+]</code></pre>
+    <h3 class="h6">Codes de statut</h3>
+    <dl class="row mb-0">
+      <dt class="col-sm-2">200</dt>
+      <dd class="col-sm-10">Liste des contrevenants avec leur nombre de contraventions.</dd>
+      <dt class="col-sm-2">400</dt>
+      <dd class="col-sm-10">Paramètres manquants ou date de début postérieure à la date de fin.</dd>
+    </dl>
+  </div>
+</div>
+
+<!-- GET /api/etablissements (JSON) -->
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center gap-2">
+    <span class="badge bg-success">GET</span>
+    <h2 class="h6 mb-0"><code>/api/etablissements</code></h2>
+  </div>
+  <div class="card-body">
+    <p>
+      Retourne tous les établissements ayant commis des infractions,
+      triés par nombre d'infractions décroissant (JSON).
+    </p>
+    <h3 class="h6">Réponse 200</h3>
+    <pre class="bg-light p-2 rounded"><code>[
+  {"etablissement": "RESTAURANT ABC", "nb_infractions": 5},
+  {"etablissement": "EPICERIE XYZ", "nb_infractions": 2}
+]</code></pre>
+  </div>
+</div>
+
+<!-- GET /api/etablissements.xml -->
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center gap-2">
+    <span class="badge bg-success">GET</span>
+    <h2 class="h6 mb-0"><code>/api/etablissements.xml</code></h2>
+  </div>
+  <div class="card-body">
+    <p>Retourne les mêmes données que ci-dessus en format XML (UTF-8).</p>
+    <h3 class="h6">Réponse 200</h3>
+    <pre class="bg-light p-2 rounded"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;etablissements&gt;
+  &lt;etablissement&gt;
+    &lt;nom&gt;RESTAURANT ABC&lt;/nom&gt;
+    &lt;nb_infractions&gt;5&lt;/nb_infractions&gt;
+  &lt;/etablissement&gt;
+&lt;/etablissements&gt;</code></pre>
+  </div>
+</div>
+
+<!-- GET /api/etablissements.csv -->
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center gap-2">
+    <span class="badge bg-success">GET</span>
+    <h2 class="h6 mb-0"><code>/api/etablissements.csv</code></h2>
+  </div>
+  <div class="card-body">
+    <p>Retourne les mêmes données en format CSV (UTF-8).</p>
+    <h3 class="h6">Réponse 200</h3>
+    <pre class="bg-light p-2 rounded"><code>etablissement,nb_infractions
+RESTAURANT ABC,5
+EPICERIE XYZ,2</code></pre>
+  </div>
+</div>
+
+<!-- GET /api/etablissement/<nom> -->
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center gap-2">
+    <span class="badge bg-success">GET</span>
+    <h2 class="h6 mb-0"><code>/api/etablissement/{nom}</code></h2>
+  </div>
+  <div class="card-body">
+    <p>Retourne toutes les infractions d'un établissement donné.</p>
+    <h3 class="h6">Codes de statut</h3>
+    <dl class="row mb-0">
+      <dt class="col-sm-2">200</dt>
+      <dd class="col-sm-10">Liste des infractions de l'établissement.</dd>
+      <dt class="col-sm-2">404</dt>
+      <dd class="col-sm-10">Établissement non trouvé.</dd>
+    </dl>
+  </div>
+</div>
+
+<!-- POST /api/inspections -->
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center gap-2">
+    <span class="badge bg-primary">POST</span>
+    <h2 class="h6 mb-0"><code>/api/inspections</code></h2>
+  </div>
+  <div class="card-body">
+    <p>Crée une demande d'inspection. Corps JSON requis et validé par json-schema.</p>
+    <h3 class="h6">Corps de la requête</h3>
+    <pre class="bg-light p-2 rounded"><code>{
+  "etablissement": "string (requis)",
+  "adresse": "string (requis)",
+  "ville": "string (requis)",
+  "date_visite": "YYYY-MM-DD (requis)",
+  "prenom_client": "string (requis)",
+  "nom_client": "string (requis)",
+  "description": "string (requis)"
+}</code></pre>
+    <h3 class="h6">Codes de statut</h3>
+    <dl class="row mb-0">
+      <dt class="col-sm-2">201</dt>
+      <dd class="col-sm-10">Demande créée — retourne l'identifiant.</dd>
+      <dt class="col-sm-2">400</dt>
+      <dd class="col-sm-10">Données invalides ou champ manquant.</dd>
+    </dl>
+  </div>
+</div>
+
+<!-- DELETE /api/inspections/<id> -->
+<div class="card mb-4">
+  <div class="card-header d-flex align-items-center gap-2">
+    <span class="badge bg-danger">DELETE</span>
+    <h2 class="h6 mb-0"><code>/api/inspections/{id}</code></h2>
+  </div>
+  <div class="card-body">
+    <p>Supprime une demande d'inspection par son identifiant.</p>
+    <h3 class="h6">Codes de statut</h3>
+    <dl class="row mb-0">
+      <dt class="col-sm-2">200</dt>
+      <dd class="col-sm-10">Demande supprimée avec succès.</dd>
+      <dt class="col-sm-2">404</dt>
+      <dd class="col-sm-10">Demande non trouvée.</dd>
+    </dl>
+  </div>
+</div>
+{% endblock %}

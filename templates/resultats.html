@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block titre %}Résultats de recherche — Contraventions{% endblock %}
+
+{% block contenu %}
+<div class="row mb-4 align-items-center">
+  <div class="col">
+    <h1 class="h3 mb-1">Résultats de la recherche</h1>
+    <p class="text-muted mb-0">
+      Recherche par <strong>{{ type_recherche }}</strong> :
+      <em>{{ valeur }}</em>
+    </p>
+  </div>
+  <div class="col-auto">
+    {% if contraventions %}
+    <span class="badge bg-danger fs-6 me-2">
+      {{ contraventions | length }} résultat(s)
+    </span>
+    {% endif %}
+    <a href="{{ url_for('afficher_accueil') }}"
+       class="btn btn-outline-secondary btn-sm">
+      &larr; Retour
+    </a>
+  </div>
+</div>
+
+{% if contraventions %}
+<div class="row row-cols-1 g-3">
+  {% for c in contraventions %}
+  <div class="col">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <h2 class="h6 card-title mb-0 fw-bold">{{ c.etablissement }}</h2>
+          <div class="d-flex gap-1 flex-wrap justify-content-end">
+            {% if c.statut == "Ouvert" %}
+              <span class="badge bg-success">{{ c.statut }}</span>
+            {% elif c.statut == "Fermé" %}
+              <span class="badge bg-danger">{{ c.statut }}</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ c.statut or "—" }}</span>
+            {% endif %}
+            {% if c.categorie %}
+              <span class="badge bg-info text-dark">{{ c.categorie }}</span>
+            {% endif %}
+          </div>
+        </div>
+        <dl class="row mb-0 small">
+          <dt class="col-sm-3">Propriétaire</dt>
+          <dd class="col-sm-9">{{ c.proprietaire or "—" }}</dd>
+          <dt class="col-sm-3">Adresse</dt>
+          <dd class="col-sm-9">{{ c.adresse or "—" }}</dd>
+          <dt class="col-sm-3">Date</dt>
+          <dd class="col-sm-9">{{ c.date or "—" }}</dd>
+          <dt class="col-sm-3">Montant</dt>
+          <dd class="col-sm-9">
+            {% if c.montant %}<strong>{{ c.montant }} $</strong>{% else %}—{% endif %}
+          </dd>
+          <dt class="col-sm-3">Description</dt>
+          <dd class="col-sm-9">{{ c.description or "—" }}</dd>
+          <dt class="col-sm-3">No poursuite</dt>
+          <dd class="col-sm-9">{{ c.id_poursuite }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="text-center py-5">
+  <p class="fs-1 mb-2">&#128269;</p>
+  <h2 class="h5 text-muted">Aucune contravention trouvée</h2>
+  <p class="text-muted">
+    Essayez un autre terme de recherche.
+  </p>
+  <a href="{{ url_for('afficher_accueil') }}" class="btn btn-primary">
+    Nouvelle recherche
+  </a>
+</div>
+{% endif %}
+{% endblock %}

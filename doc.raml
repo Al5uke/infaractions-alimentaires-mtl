@@ -1,0 +1,178 @@
+#%RAML 1.0
+title: API Contraventions alimentaires — Montréal
+version: v1
+baseUri: http://localhost:5000
+mediaType: application/json
+
+documentation:
+  - title: Introduction
+    content: |
+      API REST pour consulter les contraventions alimentaires de la Ville de Montréal,
+      gérer les demandes d'inspection et obtenir des statistiques sur les établissements.
+
+/contrevenants:
+  description: Contraventions émises entre deux dates.
+  get:
+    description: |
+      Retourne la liste des établissements contrevenants et leur nombre de
+      contraventions pour une période donnée.
+    queryParameters:
+      du:
+        description: Date de début (format ISO 8601 YYYY-MM-DD)
+        type: string
+        required: true
+        example: "2022-05-08"
+      au:
+        description: Date de fin (format ISO 8601 YYYY-MM-DD)
+        type: string
+        required: true
+        example: "2024-05-15"
+    responses:
+      200:
+        description: Liste des contrevenants avec leur nombre de contraventions.
+        body:
+          application/json:
+            example: |
+              [
+                {"etablissement": "RESTAURANT ABC", "nb_contraventions": 3},
+                {"etablissement": "EPICERIE XYZ", "nb_contraventions": 1}
+              ]
+      400:
+        description: Paramètres manquants ou date de début postérieure à la date de fin.
+        body:
+          application/json:
+            example: |
+              {"erreur": "Paramètres 'du' et 'au' requis."}
+
+/api/etablissements:
+  description: Liste des établissements avec leur nombre d'infractions.
+  get:
+    description: |
+      Retourne tous les établissements ayant commis au moins une infraction,
+      triés par nombre d'infractions décroissant.
+    responses:
+      200:
+        description: Liste des établissements avec leur nombre d'infractions.
+        body:
+          application/json:
+            example: |
+              [
+                {"etablissement": "RESTAURANT ABC", "nb_infractions": 5},
+                {"etablissement": "EPICERIE XYZ", "nb_infractions": 2}
+              ]
+
+/api/etablissements.xml:
+  description: Liste des établissements en format XML.
+  get:
+    description: Retourne les mêmes données que /api/etablissements en XML UTF-8.
+    responses:
+      200:
+        description: Liste XML des établissements.
+        body:
+          application/xml:
+            example: |
+              <?xml version="1.0" encoding="UTF-8"?>
+              <etablissements>
+                <etablissement>
+                  <nom>RESTAURANT ABC</nom>
+                  <nb_infractions>5</nb_infractions>
+                </etablissement>
+              </etablissements>
+
+/api/etablissements.csv:
+  description: Liste des établissements en format CSV.
+  get:
+    description: Retourne les mêmes données que /api/etablissements en CSV UTF-8.
+    responses:
+      200:
+        description: Fichier CSV des établissements.
+        body:
+          text/csv:
+            example: |
+              etablissement,nb_infractions
+              RESTAURANT ABC,5
+              EPICERIE XYZ,2
+
+/api/etablissement/{nom}:
+  description: Infractions d'un établissement donné.
+  uriParameters:
+    nom:
+      description: Nom exact de l'établissement
+      type: string
+  get:
+    description: Retourne toutes les infractions d'un établissement.
+    responses:
+      200:
+        description: Liste des infractions de l'établissement.
+        body:
+          application/json:
+            example: |
+              [
+                {
+                  "id_poursuite": 1234,
+                  "etablissement": "RESTAURANT ABC",
+                  "date": "2023-05-10",
+                  "description": "Description de l'infraction...",
+                  "montant": 1500
+                }
+              ]
+      404:
+        description: Établissement non trouvé.
+        body:
+          application/json:
+            example: |
+              {"erreur": "Établissement non trouvé."}
+
+/api/inspections:
+  description: Gestion des demandes d'inspection.
+  post:
+    description: |
+      Crée une nouvelle demande d'inspection pour signaler un problème
+      dans un établissement alimentaire.
+    body:
+      application/json:
+        example: |
+          {
+            "etablissement": "RESTAURANT ABC",
+            "adresse": "123 Rue Principale",
+            "ville": "Montréal",
+            "date_visite": "2024-03-15",
+            "prenom_client": "Jean",
+            "nom_client": "Tremblay",
+            "description": "Présence de rongeurs observée."
+          }
+    responses:
+      201:
+        description: Demande créée avec succès.
+        body:
+          application/json:
+            example: |
+              {"id": 42, "message": "Demande créée avec succès."}
+      400:
+        description: Données invalides ou champ manquant.
+        body:
+          application/json:
+            example: |
+              {"erreur": "Le champ 'etablissement' est requis."}
+
+/api/inspections/{id}:
+  description: Suppression d'une demande d'inspection.
+  uriParameters:
+    id:
+      description: Identifiant de la demande d'inspection
+      type: integer
+  delete:
+    description: Supprime une demande d'inspection par son identifiant.
+    responses:
+      200:
+        description: Demande supprimée avec succès.
+        body:
+          application/json:
+            example: |
+              {"message": "Demande supprimée avec succès."}
+      404:
+        description: Demande non trouvée.
+        body:
+          application/json:
+            example: |
+              {"erreur": "Demande non trouvée."}

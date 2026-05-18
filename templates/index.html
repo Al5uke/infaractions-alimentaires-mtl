@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block titre %}Accueil — Contraventions alimentaires Montréal{% endblock %}
+
+{% block contenu %}
+
+<!-- Hero section -->
+<section class="hero rounded-3 mb-5 p-5 text-white" aria-labelledby="titre-hero">
+  <div class="row align-items-center">
+    <div class="col-lg-7">
+      <h1 id="titre-hero" class="display-5 fw-bold mb-2">
+        Contraventions alimentaires
+      </h1>
+      <p class="lead mb-0">
+        Données ouvertes de la Ville de Montréal — inspections alimentaires
+      </p>
+    </div>
+    {% if stats %}
+    <div class="col-lg-5 mt-4 mt-lg-0">
+      <div class="row g-3 text-center">
+        <div class="col-4">
+          <div class="hero-stat rounded-3 p-3">
+            <div class="hero-stat-number">{{ stats.nb_contraventions }}</div>
+            <div class="hero-stat-label">contraventions</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="hero-stat rounded-3 p-3">
+            <div class="hero-stat-number">{{ stats.nb_etablissements }}</div>
+            <div class="hero-stat-label">établissements</div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="hero-stat rounded-3 p-3">
+            <div class="hero-stat-number">{{ stats.derniere_mise_a_jour or "—" }}</div>
+            <div class="hero-stat-label">dernière infraction</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Formulaire de recherche par critère (A2) -->
+<section class="mb-4" aria-labelledby="titre-recherche-critere">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title h5" id="titre-recherche-critere">
+        Rechercher des contraventions
+      </h2>
+
+      {% if erreur %}
+      <div class="alert alert-danger" role="alert">{{ erreur }}</div>
+      {% endif %}
+
+      <form action="{{ url_for('traiter_recherche') }}" method="post" novalidate
+            id="form-recherche-critere">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label for="type-recherche" class="form-label">Rechercher par</label>
+            <select class="form-select" id="type-recherche"
+                    name="type_recherche" required>
+              <option value="">-- Choisir un critère --</option>
+              <option value="etablissement">Nom d'établissement</option>
+              <option value="proprietaire">Propriétaire</option>
+              <option value="rue">Rue</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="valeur-recherche" class="form-label">
+              Valeur recherchée
+            </label>
+            <input type="text" class="form-control" id="valeur-recherche"
+                   name="valeur" placeholder="ex. : Rosemont, McDonald..."
+                   required minlength="1" maxlength="200">
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+              Rechercher
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Formulaire de recherche par dates (A5) -->
+<section class="mb-4" aria-labelledby="titre-recherche-dates">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title h5" id="titre-recherche-dates">
+        Contrevenants entre deux dates
+      </h2>
+      <form id="form-recherche-dates" novalidate>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label for="date-debut" class="form-label">Date de début</label>
+            <input type="date" class="form-control" id="date-debut"
+                   name="du" required>
+          </div>
+          <div class="col-md-4">
+            <label for="date-fin" class="form-label">Date de fin</label>
+            <input type="date" class="form-control" id="date-fin"
+                   name="au" required>
+          </div>
+          <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">
+              Rechercher
+            </button>
+          </div>
+        </div>
+        <div id="erreur-dates" class="alert alert-danger mt-3 d-none"
+             role="alert"></div>
+      </form>
+
+      <div id="spinner-dates" class="text-center my-3 d-none" aria-live="polite">
+        <div class="spinner-border text-secondary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+      </div>
+
+      <div id="resultats-dates" class="mt-4 d-none">
+        <h3 class="h6">Résultats</h3>
+        <div class="table-responsive">
+          <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">Établissement</th>
+                <th scope="col" class="text-end">Contraventions</th>
+              </tr>
+            </thead>
+            <tbody id="corps-tableau-dates"></tbody>
+          </table>
+        </div>
+        <p id="aucun-resultat-dates" class="text-muted d-none">
+          Aucun contrevenant trouvé pour cette période.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Formulaire de recherche par restaurant (A6) -->
+<section class="mb-4" aria-labelledby="titre-recherche-restaurant">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title h5" id="titre-recherche-restaurant">
+        Infractions d'un restaurant
+      </h2>
+      <form id="form-recherche-restaurant" novalidate>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-8">
+            <label for="select-restaurant" class="form-label">
+              Choisir un établissement
+            </label>
+            <select class="form-select" id="select-restaurant"
+                    name="etablissement" required>
+              <option value="">-- Sélectionner un établissement --</option>
+              {% for e in etablissements %}
+              <option value="{{ e.etablissement }}">
+                {{ e.etablissement }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <button type="submit" class="btn btn-primary w-100">
+              Voir les infractions
+            </button>
+          </div>
+        </div>
+        <div id="erreur-restaurant" class="alert alert-danger mt-3 d-none"
+             role="alert"></div>
+      </form>
+
+      <div id="spinner-restaurant" class="text-center my-3 d-none"
+           aria-live="polite">
+        <div class="spinner-border text-secondary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+      </div>
+
+      <div id="resultats-restaurant" class="mt-4 d-none">
+        <p class="fw-bold" id="titre-restaurant"></p>
+        <div id="liste-infractions"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/recherche.js') }}"></script>
+<script src="{{ url_for('static', filename='js/restaurant.js') }}"></script>
+{% endblock %}

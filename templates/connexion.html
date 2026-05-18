@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block titre %}Connexion — Contraventions{% endblock %}
+
+{% block contenu %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <h1 class="mb-1">Se connecter</h1>
+    <p class="text-muted mb-4">Accédez à votre profil et gérez vos alertes.</p>
+
+    <div id="msg-erreur" class="alert alert-danger d-none" role="alert"></div>
+
+    <form id="form-connexion" novalidate>
+
+      <div class="mb-3">
+        <label for="cx-courriel" class="form-label">Adresse courriel</label>
+        <input type="email" class="form-control" id="cx-courriel"
+               name="courriel" required>
+        <div class="invalid-feedback">Ce champ est obligatoire.</div>
+      </div>
+
+      <div class="mb-4">
+        <label for="cx-mdp" class="form-label">Mot de passe</label>
+        <input type="password" class="form-control" id="cx-mdp"
+               name="mot_de_passe" required>
+        <div class="invalid-feedback">Ce champ est obligatoire.</div>
+      </div>
+
+      <button type="submit" class="btn btn-danger w-100">
+        Se connecter
+      </button>
+      <div class="text-center mt-3">
+        <a href="{{ url_for('afficher_inscription') }}">Pas encore de compte ? S'inscrire</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/connexion.js') }}"></script>
+{% endblock %}
